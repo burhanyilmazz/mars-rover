@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Mars Rover</title>
+    <meta name="author" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  
+  <body>
+      <script type="text/javascript">
+        function Rover(x, y, direction_name){
+            this.x = x;
+            this.y = y;
+            
+            this.convertDirectionLetterToAngle = function(direction_name) {              
+              switch(direction_name){ 
+                  case 'S': 
+                    return 0;
+                  break;
+
+                  case 'E': 
+                    return 90;
+                  break;
+
+                  case 'N': 
+                    return 180;
+                  break;
+
+                  case 'W': 
+                    return 270;
+                  break;
+              }  
+            }   
+
+            this.convertDirectionAngleToLetter = function(angle){              
+              switch(angle % 360){
+                  case 0: 
+                    return 'S';
+                  break;                  
+
+                  case 90: 
+                    return 'E';
+                  break;
+
+                  case 180: 
+                    return 'N';
+                  break; 
+
+                  case 270: 
+                    return 'W';
+                  break;
+              }  
+            }  
+
+            this.direction_angle = this.convertDirectionLetterToAngle(direction_name);
+
+            this.dump = function(){
+                console.log(this.x.toString() + " " + this.y.toString() + " " + this.convertDirectionAngleToLetter(this.direction_angle));
+            }       
+        }
+
+        function MarsRover(width, height){
+            this.width = width;
+            this.height = height;
+            var roverList = [];
+
+            this.addRover = function(x,y,direction_name){
+                var rover = new Rover(x, y, direction_name);
+                roverList.push(rover);                
+            }
+
+            this.printStatus = function(){
+                console.log(roverList);
+            };
+
+            this.sendCommand = function(commands){
+                for(var index = 0, commandsLength = commands.length; index < commandsLength; index++) {
+                    var command = commands[index];
+                    this.move(command);
+                }      
+            }   
+
+            this.move = function(command_letter){
+
+                var last_rover = roverList[roverList.length - 1];
+                var direction = last_rover.direction_angle;
+                          
+                switch(command_letter){
+                    case 'L': 
+                      direction = (direction + 90) % 360;
+                      roverList[roverList.length - 1].direction_angle = direction;
+                      return;
+                    break;
+                    
+                    case 'R': 
+                      direction = (direction + 270) % 360;
+                      roverList[roverList.length - 1].direction_angle = direction;
+                      return;
+                    break;
+                }
+              
+                var dx = 0, dy = 0, movement = 1;
+
+                switch(direction){
+                    case 0:
+                        dy = -movement;
+                        break;
+                    case 90:
+                        dx = movement;
+                        break;
+                    case 180:
+                        dy = movement;
+                        break;
+                    case 270:
+                        dx = -movement;
+                        break;
+                    default:
+                        break;
+                }
+
+                var target_x = last_rover.x + dx;
+                var target_y = last_rover.y + dy;
+
+                roverList[roverList.length - 1].x = target_x;
+                roverList[roverList.length - 1].y = target_y;                
+            }        
+
+            this.getFinalPositions = function(){
+                for(i = 0; i < roverList.length; i++) {
+                    roverList[i].dump();                    
+                }
+            } 
+
+        }        
+
+      </script>
+      
+      <script>
+        var marsRover = new MarsRover(5, 5);
+        marsRover.addRover(1,2,'N');
+        marsRover.sendCommand('LMLMLMLMM');
+        marsRover.addRover(3,3,'E');
+        marsRover.sendCommand('MMRMMRMRRM');
+        marsRover.getFinalPositions();
+    </script>
+ </body>
+</html>
